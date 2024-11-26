@@ -43,14 +43,28 @@
 
 >In order for the code to run, you must update the url, name and method healthcheck.yaml file. Method needs to be either GET or POST. For POST add in any headersor body to send.
 
+
+
    ```sh
+   Example 1:
+     - headers:
+         user-agent: useragent
+       method: GET
+       name: Fetch test page
+       url: https://example.com/test
+
+   Example 2:
    - body: '{"foo":"bar"}'
-    headers:
-      username: username
-      password: password
-    method: POST
-    name: fetch some fake post endpoint
-    url: https://example.com
+     headers:
+       content-type: applicaiton/json
+       user-agent: useragent
+     method: POST
+     name: fetch some fake post endpoint
+     url: https://example.com
+   
+   Example 3:
+     - name: fetch index page
+       url: https://example.com
    ```
 
 ### Usage
