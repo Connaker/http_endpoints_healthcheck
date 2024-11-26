@@ -85,7 +85,7 @@ def endpoint_healthcheck(urls):
                             response = requests.post(item['url'], headers=item['headers'])
                     else:
                         if item['body'] and item['headers']:
-                            response = requests.get(item['url'], data=item['body'], headers=item['headers'])
+                            response = requests.get(item['url'], json=item['body'], headers=item['headers'])
                         elif item['headers'] and not item['body']:
                             print(f"GET: {item['url']}, headers={item['headers']}")
                             response = requests.get(item['url'], headers=item['headers'])
