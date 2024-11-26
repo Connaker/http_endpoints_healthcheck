@@ -160,5 +160,5 @@ def get_base_url(url):
     parsed = urlparse(url)
     return f"{parsed.scheme}://{parsed.netloc}"
 
-file_path = 'local_healthcheck.yaml'
+file_path = 'healthcheck.yaml'
 config_data = file_check(file_path)
