@@ -49,68 +49,72 @@ def endpoint_healthcheck(urls):
     cycle_count = 0
     start_time = 0 
     data = []
+    try:                                                                                            # Gracefully stops program if CTRL+C is detected
+        while True:                                                                                 # Loop that keeps program running until break (CTRL+C)
+            
+            print(f"Test cycle #{cycle_count + 1} at time = {start_time} seconds")                  # Starts Cycle test. Each cycle count increases by one, each start time increase by 15
 
-    while True:                                                                                 # Loop that keeps program running until break (CTRL+C)
-        
-        print(f"Test cycle #{cycle_count + 1} at time = {start_time} seconds")                  # Starts Cycle test. Each cycle count increases by one, each start time increase by 15
+            """
+                FOR LOOP: 
+                    Loops through all items in the argument (url)
+                            Sets up_count to 0
+                            IF statements used to verifies:
+                                    If method is POST or GET
+                                    If item has url, body, headers or url, headers or url
+                            Verifies status
+                            Verifies Millisecond count. If greater than 600, automatically sets it as DOWN even if UP
+                            Try and Except used to catch any RequestExceptions
+            """
+            for item in urls:
+                method = item['method']
+                up_count=0
+                try:
+                    if method == 'POST':
 
-        """
-            FOR LOOP: 
-                Loops through all items in the argument (url)
-                        Sets up_count to 0
-                        IF statements used to verifies:
-                                If method is POST or GET
-                                If item has url, body, headers or url, headers or url
-                        Verifies status
-                        Verifies Millisecond count. If greater than 600, automatically sets it as DOWN even if UP
-                        Try and Except used to catch any RequestExceptions
-        """
-        for item in urls:
-            method = item['method']
-            up_count=0
-            try:
-                if method == 'POST':
-
-                    if item['body'] and item['headers']:
-                        response = requests.post(item['url'], json=item['body'], headers=item['headers'])
+                        if item['body'] and item['headers']:
+                            response = requests.post(item['url'], json=item['body'], headers=item['headers'])
+                        else:
+                            response = requests.post(item['url'], headers=item['headers'])
                     else:
-                        response = requests.post(item['url'], headers=item['headers'])
-                else:
-                    if item['body'] and item['headers']:
-                        response = requests.get(item['url'], data=item['body'], headers=item['headers'])
-                    elif item['headers'] and not item['body']:
-                        print(f"GET: {item['url']}, headers={item['headers']}")
-                        response = requests.get(item['url'], headers=item['headers'])
+                        if item['body'] and item['headers']:
+                            response = requests.get(item['url'], data=item['body'], headers=item['headers'])
+                        elif item['headers'] and not item['body']:
+                            print(f"GET: {item['url']}, headers={item['headers']}")
+                            response = requests.get(item['url'], headers=item['headers'])
+                        else:
+                            response = requests.get(item['url'])
+                            
+
+                    if response and response.status_code // 100 == 2:
+                        mseconds_check = response.elapsed.total_seconds() * 1000
+
+                        if mseconds_check > 600:
+                            print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => DOWN")
+                        else:
+                            up_count +=1
+                            print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => UP")        
+
                     else:
-                        response = requests.get(item['url'])
-                        
-
-                if response and response.status_code // 100 == 2:
-                    mseconds_check = response.elapsed.total_seconds() * 1000
-
-                    if mseconds_check > 600:
                         print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => DOWN")
-                    else:
-                        up_count +=1
-                        print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => UP")        
-
-                else:
-                    print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => DOWN")
 
 
-            except requests.RequestException as e:
-                print(f"Error checking {item['url']}: {e}")
+                except requests.RequestException as e:
+                    print(f"Error checking {item['url']}: {e}")
 
-            # Collects URL and Up Count totals for each URL ran through the Loop.
-            data.append({
-                "url": item['url'],
-                "up_count": up_count,
-            })
+                # Collects URL and Up Count totals for each URL ran through the Loop.
+                data.append({
+                    "url": item['url'],
+                    "up_count": up_count,
+                })
 
-        cycle_count +=1                                                                             # Updates cycle Count for next Loop
-        print(f"Test cycle #{cycle_count} ends. The program logs to the console:")                  # Prints End of Cycle Test
-        health_check_results(data)                                                                  # Sends results (data dictionary) to health_check_reesults function
-        start_time += 15                                                                            # Updates start time by 15 seconds
+            cycle_count +=1                                                                             # Updates cycle Count for next Loop
+            print(f"Test cycle #{cycle_count} ends. The program logs to the console:")                  # Prints End of Cycle Test
+            health_check_results(data)                                                                  # Sends results (data dictionary) to health_check_reesults function
+            start_time += 15                                                                            # Updates start time by 15 seconds
+    except KeyboardInterrupt:
+        print("Stopping program")
+        time.sleep(5)
+        print("Program gracefully stopped")
 
 def health_check_results(data):
     combined_results={}
@@ -156,5 +160,5 @@ def get_base_url(url):
     parsed = urlparse(url)
     return f"{parsed.scheme}://{parsed.netloc}"
 
-file_path = 'healthcheck.yaml'
+file_path = 'local_healthcheck.yaml'
 config_data = file_check(file_path)
