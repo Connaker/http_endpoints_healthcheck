@@ -2,7 +2,7 @@
 
 ## About this Project
 
-> This program checks the health of a set of HTTP endpoints. It reads an input argument from a file path with a list of HTTP endpoints in YAML format, tests the health of the endpoints in 15 second test cycles and displays results of the availability percentage of the HTTP root domains being monitored by the program.
+> This program checks the health of a set of HTTP endpoints. It reads an input argument from a file path with a list of HTTP endpoints in YAML format, tests the health of the endpoints in 15 second test cycles and displays results of the UP availability percentage of the HTTP root domains being monitored by the program.
 
 ## Built with
 
@@ -41,7 +41,7 @@
 
 ### Update healthcheck.yaml
 
->In order for the code to run, you must update the url, name and method healthcheck.yaml file. Method needs to be either GET or POST. For POST add in any headersor body to send.
+>Update healthcheck.yaml with Header fields, Body message, method, name and url. Header fields are seperated by colon, key-value pairs in clear-text string format. For this program, Body uses the JSON format. Url is the url of the website you are testing. For this program, method is either GET or POST.
 
    ```sh
    Example 1:
@@ -52,13 +52,13 @@
        url: https://example.com/test
 
    Example 2:
-   - body: '{"foo":"bar"}'
-     headers:
-       content-type: applicaiton/json
-       user-agent: useragent
-     method: POST
-     name: fetch some fake post endpoint
-     url: https://example.com
+     - body: '{"foo":"bar"}'
+       headers:
+         content-type: applicaiton/json
+         user-agent: useragent
+       method: POST
+       name: fetch some fake post endpoint
+       url: https://example.com
    
    Example 3:
      - name: fetch index page

@@ -25,11 +25,16 @@ def file_check(file_path):
     with open(file_path, 'r') as file:
         data = yaml.safe_load(file)
 
-        if not data or 'resources' not in data:                                                # validates data and file format
+        if not data or 'resources' not in data:                                                         # validates data and file format
             raise ValueError("Invalid file format")
         
         check = []
-        # Retrives required data from YAML file, stores in check dictionary.
+        
+        """
+            FOR LOOP:
+                Retrieves required data from YAML file and stores in dictionary.
+        """
+
         for resource in data['resources']:
             url = resource.get('url')
             headers = []
@@ -43,16 +48,17 @@ def file_check(file_path):
                 'body': body,
             })
 
-    endpoint_healthcheck(check)                                                                 # Sends dictionary to endpoint_healthcheck
+    endpoint_healthcheck(check)                                                                         # Sends dictionary to endpoint_healthcheck
 
 def endpoint_healthcheck(urls):
     cycle_count = 0
     start_time = 0 
     data = []
-    try:                                                                                            # Gracefully stops program if CTRL+C is detected
-        while True:                                                                                 # Loop that keeps program running until break (CTRL+C)
+    try:
+                                                                                                        # Gracefully stops program if CTRL+C is detected
+        while True:                                                                                     # Loop that keeps program running until break (CTRL+C)
             
-            print(f"Test cycle #{cycle_count + 1} at time = {start_time} seconds")                  # Starts Cycle test. Each cycle count increases by one, each start time increase by 15
+            print(f"Test cycle #{cycle_count + 1} at time = {start_time} seconds")                      # Starts Cycle test. Each cycle count increases by one, each start time increase by 15
 
             """
                 FOR LOOP: 
@@ -68,7 +74,9 @@ def endpoint_healthcheck(urls):
             for item in urls:
                 method = item['method']
                 up_count=0
+
                 try:
+
                     if method == 'POST':
 
                         if item['body'] and item['headers']:
@@ -93,16 +101,14 @@ def endpoint_healthcheck(urls):
                         else:
                             up_count +=1
                             print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => UP")        
-
                     else:
                         print(f"Endpoint with the name {item['url']} has HTTP response code {response.status_code} and the response latency {math.ceil(mseconds_check)} => DOWN")
-
 
                 except requests.RequestException as e:
                     print(f"Error checking {item['url']}: {e}")
 
-                # Collects URL and Up Count totals for each URL ran through the Loop.
-                data.append({
+                
+                data.append({                                                                           # Collects URL and Up Count totals for each URL ran through the Loop.
                     "url": item['url'],
                     "up_count": up_count,
                 })
@@ -111,10 +117,11 @@ def endpoint_healthcheck(urls):
             print(f"Test cycle #{cycle_count} ends. The program logs to the console:")                  # Prints End of Cycle Test
             health_check_results(data)                                                                  # Sends results (data dictionary) to health_check_reesults function
             start_time += 15                                                                            # Updates start time by 15 seconds
-    except KeyboardInterrupt:
-        print("Stopping program")
-        time.sleep(5)
-        print("Program gracefully stopped")
+
+    except KeyboardInterrupt:                                                                           # If CTRL+C is detected, stops program
+        print("Stopping program")                                                                       # prints notification
+        time.sleep(5)                                                                                   # waits five seconds
+        print("Program gracefully stopped")                                                             # prints final notification
 
 def health_check_results(data):
     combined_results={}
@@ -135,7 +142,6 @@ def health_check_results(data):
         if base_url in combined_results:
             combined_results[base_url]["up_count"] += up_count
             combined_results[base_url]["count"] += 1
-           
         else:
             combined_results[base_url] = {"up_count": up_count, "count": 1}
 
@@ -151,10 +157,10 @@ def health_check_results(data):
     for key, value in combined_results.items():
         uc = value['up_count']
         c = value['count']
-        totals = 100 * uc / c
-        
-        print(f"{base_url} has {math.ceil(totals)} availability percentage")
-    time.sleep(15)                                                                                  # stops the program for 15 seconds
+        totals = 100 * uc / c     
+        print(f"{base_url} has {math.ceil(totals)} availability percentage")    
+
+    time.sleep(15)                                                                                      # stops the program for 15 seconds
 
 def get_base_url(url):
     parsed = urlparse(url)
