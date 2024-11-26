@@ -43,8 +43,6 @@
 
 >In order for the code to run, you must update the url, name and method healthcheck.yaml file. Method needs to be either GET or POST. For POST add in any headersor body to send.
 
-
-
    ```sh
    Example 1:
      - headers:
