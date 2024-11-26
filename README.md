@@ -41,11 +41,22 @@
 
 ### Update healthcheck.yaml
 
->In order for the code to run, you must update the url, name and method healthcheck.yaml file. Method needs to be either GET or POST. For POST add in any headers (example:(username, password)) or body (example:("foo":"bar")) to send.
+>In order for the code to run, you must update the url, name and method healthcheck.yaml file. Method needs to be either GET or POST. For POST add in any headersor body to send.
+
+   ```sh
+   - body: '{"foo":"bar"}'
+    headers:
+      username: username
+      password: password
+    method: POST
+    name: fetch some fake post endpoint
+    url: https://example.com
+   ```
 
 ### Usage
 
 > to run the program, use `python healtcheck.py`. The program will continue to run until you stop it by using `CTRL+C` at which time the program will exit.
 
 ### Notes
+
 > The program is designed to automatically fail any HTTP endpoints with a millisecond greater than 500. It is designed to send both Headers and Data(Body).
