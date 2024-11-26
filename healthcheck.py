@@ -87,7 +87,6 @@ def endpoint_healthcheck(urls):
                         if item['body'] and item['headers']:
                             response = requests.get(item['url'], json=item['body'], headers=item['headers'])
                         elif item['headers'] and not item['body']:
-                            print(f"GET: {item['url']}, headers={item['headers']}")
                             response = requests.get(item['url'], headers=item['headers'])
                         else:
                             response = requests.get(item['url'])
@@ -142,6 +141,7 @@ def health_check_results(data):
         if base_url in combined_results:
             combined_results[base_url]["up_count"] += up_count
             combined_results[base_url]["count"] += 1
+
         else:
             combined_results[base_url] = {"up_count": up_count, "count": 1}
 
@@ -153,12 +153,13 @@ def health_check_results(data):
             requests))
             prints percentage results
     """
-
+    
     for key, value in combined_results.items():
         uc = value['up_count']
         c = value['count']
-        totals = 100 * uc / c     
-        print(f"{base_url} has {math.ceil(totals)} availability percentage")    
+        totals = 100 * uc / c
+
+        print(f"{key} has {math.ceil(totals)} availability percentage")    
 
     time.sleep(15)                                                                                      # stops the program for 15 seconds
 
@@ -166,5 +167,5 @@ def get_base_url(url):
     parsed = urlparse(url)
     return f"{parsed.scheme}://{parsed.netloc}"
 
-file_path = 'healthcheck.yaml'
+file_path = 'local_healthcheck.yaml'
 config_data = file_check(file_path)
