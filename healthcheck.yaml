@@ -1,0 +1,24 @@
+---
+resources:
+  - headers:
+      user-agent: 
+    method: 
+    name: 
+    url:
+
+  - headers:
+      user-agent: 
+    method: 
+    name: 
+    url: 
+
+  - body: 
+    headers:
+      content-type: 
+      user-agent: 
+    method: 
+    name: 
+    url: 
+
+  - name: 
+    url: 
