@@ -84,6 +84,6 @@ def get_base_url(url):
 
 
 if __name__ == "__main__":
-    file_path = 'local_healthcheck.yaml'
+    file_path = 'healthcheck.yaml'
     resources = file_check(file_path)
     endpoint_healthcheck(resources, test_cycles=None)  # Set test_cycles=N for N cycles, or None for infinite.
